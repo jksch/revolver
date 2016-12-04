@@ -42,15 +42,15 @@ func DefaultConf() Conf {
 func ValidConf(conf Conf) error {
 	switch {
 	case reflect.DeepEqual(conf, Conf{}):
-		return fmt.Errorf("conf can not be empty")
+		return fmt.Errorf("revolver conf can not be empty")
 	case conf.Prefix == "":
-		return fmt.Errorf("conf.Prefix can not be empty")
+		return fmt.Errorf("revolver conf.Prefix can not be empty")
 	case conf.Middle == nil:
-		return fmt.Errorf("conf.Middle can not be nil")
+		return fmt.Errorf("revolver conf.Middle can not be nil")
 	case conf.MaxFiles < 1:
-		return fmt.Errorf("conf.MaxFiles must be > 0")
+		return fmt.Errorf("revolver conf.MaxFiles must be > 0")
 	case conf.MaxBytes < 1:
-		return fmt.Errorf("conf.MaxBytes must be > 0")
+		return fmt.Errorf("revolver conf.MaxBytes must be > 0")
 	}
 	return nil
 }

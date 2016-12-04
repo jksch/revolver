@@ -44,18 +44,18 @@ func TestValidConf(t *testing.T) {
 	}{
 		{
 			conf: Conf{},
-			err:  "conf can not be empty",
+			err:  "revolver conf can not be empty",
 		},
 		{
 			conf: Conf{Dir: "log/"},
-			err:  "conf.Prefix can not be empty",
+			err:  "revolver conf.Prefix can not be empty",
 		},
 		{
 			conf: Conf{
 				Dir:    "log/",
 				Prefix: "log-",
 			},
-			err: "conf.Middle can not be nil",
+			err: "revolver conf.Middle can not be nil",
 		},
 		{
 			conf: Conf{
@@ -63,7 +63,7 @@ func TestValidConf(t *testing.T) {
 				Prefix: "log-",
 				Middle: logDate,
 			},
-			err: "conf.MaxFiles must be > 0",
+			err: "revolver conf.MaxFiles must be > 0",
 		},
 		{
 			conf: Conf{
@@ -72,7 +72,7 @@ func TestValidConf(t *testing.T) {
 				Middle:   logDate,
 				MaxFiles: 1,
 			},
-			err: "conf.MaxBytes must be > 0",
+			err: "revolver conf.MaxBytes must be > 0",
 		},
 		{
 			conf: Conf{

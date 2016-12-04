@@ -30,7 +30,7 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			conf: Conf{},
-			err:  "conf can not be empty",
+			err:  "revolver conf can not be empty",
 		},
 		{
 			before: func(t *testing.T) {
@@ -47,7 +47,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 2,
 				MaxBytes: 1024,
 			},
-			err: "test is not a directory",
+			err: "revolver setup, test is not a directory",
 		},
 		{
 			before: func(t *testing.T) {
@@ -64,7 +64,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 1,
 				MaxBytes: 1024,
 			},
-			err: "open test: permission denied",
+			err: "revolver remove, open test: permission denied",
 		},
 		{
 			before: func(t *testing.T) {
@@ -81,7 +81,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 2,
 				MaxBytes: 1024,
 			},
-			err: "open " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
+			err: "revolver create, open " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
 		},
 		{
 			after: func(t *testing.T) {
@@ -167,7 +167,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 5,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "bytes to write 6 over max file size 5",
+			err:   "revolver bytes to write 6 over max file size 5",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -186,7 +186,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "open test: permission denied",
+			err:   "revolver remove, open test: permission denied",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -207,7 +207,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "remove " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
+			err:   "revolver remove, remove " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -227,7 +227,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "invalid argument",
+			err:   "revolver close, invalid argument",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -246,7 +246,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "open " + filepath.FromSlash("test/log_"+testMiddlePart+"_0") + ": permission denied",
+			err:   "revolver create, open " + filepath.FromSlash("test/log_"+testMiddlePart+"_0") + ": permission denied",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
