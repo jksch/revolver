@@ -23,7 +23,9 @@ func Must(w io.WriteCloser, err error) io.WriteCloser {
 	return w
 }
 
-// New returns a io.WriteCloser that writes revolving files as specified by the given conf
+// New returns a io.WriteCloser that writes revolving files as specified by the given conf.
+// Calling New will always create a new file even if there is space left in other files.
+// If the configured directory doesn't exist it will be created.
 func New(conf Conf) (io.WriteCloser, error) {
 	if err := ValidConf(conf); err != nil {
 		return nil, err
@@ -49,7 +51,8 @@ func New(conf Conf) (io.WriteCloser, error) {
 	}, nil
 }
 
-// Write the given bytes into the log file specified by the given conf
+// Write the given bytes into the log file specified by the given conf.
+// If there is not enough file space left,surplus files will be deleted and a new file will be created.
 func (l *revWriter) Write(p []byte) (n int, err error) {
 	l.lock.Lock()
 	defer l.lock.Unlock()
@@ -83,7 +86,9 @@ func (l *revWriter) Write(p []byte) (n int, err error) {
 
 }
 
-// Closes the current log file
+// Close closes the current log file and sets the writer reference to nil.
+// If the file reference is nil, the returned err is always be nil.
+// Writing to a nil referencing writer cleans up surplus files and creates a new file.
 func (l *revWriter) Close() error {
 	l.lock.Lock()
 	defer l.lock.Unlock()
