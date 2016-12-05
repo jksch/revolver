@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSetupDirs(t *testing.T) {
@@ -260,7 +261,7 @@ func TestFileCount(t *testing.T) {
 				Dir:    "test",
 				Prefix: "log_",
 			},
-			err: "readdirent: not a directory",
+			err: "readdirent:",
 		},
 	}
 
@@ -274,8 +275,8 @@ func TestFileCount(t *testing.T) {
 				defer test.after(t)
 			}
 			count, err := fileCount(test.conf)
-			if test.err != "" && test.err != errStr(err) {
-				t.Errorf("%d. exp err: '%s' got: '%v'", index, test.err, err)
+			if test.err != "" && !strings.HasPrefix(errStr(err), test.err) {
+				t.Errorf("%d. exp err starts: '%s' got: '%v'", index, test.err, err)
 			}
 			if count != test.count {
 				t.Errorf("%d. exp count: %d got %d", index, test.count, count)
@@ -489,5 +490,53 @@ func TestCountAndRemove(t *testing.T) {
 				t.Errorf("%d. exp count: %d got: %d", index, test.count, count)
 			}
 		})
+	}
+}
+
+func BenchmarkSetupDirs(b *testing.B) {
+	defer func() {
+		if err := os.RemoveAll("test"); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}()
+	for i := 0; i < b.N; i++ {
+		b.StartTimer()
+		if err := setupDirs("test/log"); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+		b.StopTimer()
+		if err := os.RemoveAll("test"); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}
+}
+
+func BenchmarkCreateFile(b *testing.B) {
+	defer func() {
+		if err := os.RemoveAll("test"); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}()
+	var conf = Conf{
+		Dir:    "test",
+		Prefix: "log_",
+		Suffix: ".txt",
+		Middle: func() string {
+			return strconv.FormatInt(time.Now().UnixNano(), 10)
+		},
+	}
+	if err := os.Mkdir("test", 0755); err != nil {
+		b.Fatalf("unexpected error, %v", err)
+	}
+	for i := 0; i < b.N; i++ {
+		b.StartTimer()
+		file, err := createFile(conf)
+		if err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+		b.StopTimer()
+		if err := file.Close(); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
 	}
 }
