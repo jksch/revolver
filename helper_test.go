@@ -540,3 +540,32 @@ func BenchmarkCreateFile(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkFileCount(b *testing.B) {
+	defer func() {
+		if err := os.RemoveAll("test"); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}()
+	var conf = Conf{
+		Dir:    "test",
+		Prefix: "log_",
+	}
+	if err := os.Mkdir("test", 0755); err != nil {
+		b.Fatalf("unexpected error, %v", err)
+	}
+	for file := 0; file < 3; file++ {
+		file, err := os.Create(filepath.FromSlash("test/log_file_" + strconv.Itoa(file)))
+		if err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+		if err := file.Close(); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}
+	for i := 0; i < b.N; i++ {
+		if _, err := fileCount(conf); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}
+}
