@@ -34,8 +34,9 @@ func TestNew(t *testing.T) {
 		},
 		{
 			before: func(t *testing.T) {
-				_, err := os.Create("test")
+				file, err := os.Create("test")
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.Remove("test"), t)
@@ -99,8 +100,9 @@ func TestNew(t *testing.T) {
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
 				for file := 0; file < 3; file++ {
-					_, err := os.Create(filepath.FromSlash("test/log_" + strconv.Itoa(file)))
+					file, err := os.Create(filepath.FromSlash("test/log_" + strconv.Itoa(file)))
 					logErr(err, t)
+					logErr(file.Close(), t)
 				}
 			},
 			after: func(t *testing.T) {
@@ -126,7 +128,10 @@ func TestNew(t *testing.T) {
 				defer test.after(t)
 			}
 
-			_, err := New(test.conf)
+			file, err := New(test.conf)
+			if file != nil {
+				logErr(file.Close(), t)
+			}
 			if errStr(err) != test.err {
 				t.Fatalf("%d. exp err: '%s' got: '%v'", index, test.err, err)
 			}
@@ -190,8 +195,9 @@ func TestWrite(t *testing.T) {
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
-				_, err := os.Create(filepath.FromSlash("test/log_test"))
+				file, err := os.Create(filepath.FromSlash("test/log_test"))
 				logErr(err, t)
+				logErr(file.Close(), t)
 				logErr(os.Chmod("test", 0555), t)
 				w.size = 5
 			},
@@ -211,8 +217,9 @@ func TestWrite(t *testing.T) {
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
-				_, err := os.Create(filepath.FromSlash("test/log_test"))
+				file, err := os.Create(filepath.FromSlash("test/log_test"))
 				logErr(err, t)
+				logErr(file.Close(), t)
 				w.size = 5
 				logErr(w.file.Close(), t)
 			},
@@ -282,8 +289,9 @@ func TestWrite(t *testing.T) {
 		{
 			before: func(w *revWriter, t *testing.T) {
 				for file := 0; file < 3; file++ {
-					_, err := os.Create("test/log_" + testMiddlePart + "_" + strconv.Itoa(file) + ".txt")
+					file, err := os.Create("test/log_" + testMiddlePart + "_" + strconv.Itoa(file) + ".txt")
 					logErr(err, t)
+					logErr(file.Close(), t)
 				}
 				w.size = 8
 			},

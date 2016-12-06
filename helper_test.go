@@ -52,8 +52,9 @@ func TestSetupDirs(t *testing.T) {
 		},
 		{
 			before: func(t *testing.T) {
-				_, err := os.Create("test")
+				file, err := os.Create("test")
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
@@ -115,8 +116,9 @@ func TestCreateFile(t *testing.T) {
 		{
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
-				_, err := os.Create(filepath.FromSlash("test/dd_" + testMiddlePart + ".json"))
+				file, err := os.Create(filepath.FromSlash("test/dd_" + testMiddlePart + ".json"))
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
@@ -132,10 +134,12 @@ func TestCreateFile(t *testing.T) {
 		{
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
-				_, err := os.Create(filepath.FromSlash("test/dd_" + testMiddlePart + ".json"))
+				file, err := os.Create(filepath.FromSlash("test/dd_" + testMiddlePart + ".json"))
 				logErr(err, t)
-				_, err = os.Create(filepath.FromSlash("test/dd_" + testMiddlePart + "_0" + ".json"))
+				logErr(file.Close(), t)
+				file, err = os.Create(filepath.FromSlash("test/dd_" + testMiddlePart + "_0" + ".json"))
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
@@ -150,8 +154,9 @@ func TestCreateFile(t *testing.T) {
 		},
 		{
 			before: func(t *testing.T) {
-				_, err := os.Create("test")
+				file, err := os.Create("test")
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.Remove("test"), t)
@@ -220,8 +225,9 @@ func TestFileCount(t *testing.T) {
 		{
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
-				_, err := os.Create(filepath.FromSlash("test/log_1"))
+				file, err := os.Create(filepath.FromSlash("test/log_1"))
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
@@ -236,8 +242,9 @@ func TestFileCount(t *testing.T) {
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
 				for files := 0; files < 4; files++ {
-					_, err := os.Create(filepath.FromSlash(fmt.Sprintf("test/log_%d", files)))
+					file, err := os.Create(filepath.FromSlash(fmt.Sprintf("test/log_%d", files)))
 					logErr(err, t)
+					logErr(file.Close(), t)
 				}
 			},
 			after: func(t *testing.T) {
@@ -251,8 +258,9 @@ func TestFileCount(t *testing.T) {
 		},
 		{
 			before: func(t *testing.T) {
-				_, err := os.Create("test")
+				file, err := os.Create("test")
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.Remove("test"), t)
@@ -311,8 +319,9 @@ func TestRemoveOlderst(t *testing.T) {
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
 				for files := 0; files < 1; files++ {
-					_, err := os.Create(filepath.FromSlash(fmt.Sprintf("test/_%d", files)))
+					file, err := os.Create(filepath.FromSlash(fmt.Sprintf("test/_%d", files)))
 					logErr(err, t)
+					logErr(file.Close(), t)
 				}
 			},
 			after: func(t *testing.T) {
@@ -328,8 +337,9 @@ func TestRemoveOlderst(t *testing.T) {
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
 				for files := 0; files < 3; files++ {
-					_, err := os.Create(filepath.FromSlash(fmt.Sprintf("test/_%d", files)))
+					file, err := os.Create(filepath.FromSlash(fmt.Sprintf("test/_%d", files)))
 					logErr(err, t)
+					logErr(file.Close(), t)
 				}
 			},
 			after: func(t *testing.T) {
@@ -344,8 +354,9 @@ func TestRemoveOlderst(t *testing.T) {
 		},
 		{
 			before: func(t *testing.T) {
-				_, err := os.Create("test")
+				file, err := os.Create("test")
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.Remove("test"), t)
@@ -359,8 +370,9 @@ func TestRemoveOlderst(t *testing.T) {
 		{
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
-				_, err := os.Create(filepath.FromSlash("test/_log"))
+				file, err := os.Create(filepath.FromSlash("test/_log"))
 				logErr(err, t)
+				logErr(file.Close(), t)
 				logErr(os.Chmod("test", 0544), t)
 			},
 			after: func(t *testing.T) {
@@ -434,8 +446,9 @@ func TestCountAndRemove(t *testing.T) {
 		{
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
-				_, err := os.Create(filepath.FromSlash("test/log_" + testMiddlePart))
+				file, err := os.Create(filepath.FromSlash("test/log_" + testMiddlePart))
 				logErr(err, t)
+				logErr(file.Close(), t)
 			},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
@@ -451,8 +464,9 @@ func TestCountAndRemove(t *testing.T) {
 			before: func(t *testing.T) {
 				logErr(os.Mkdir("test", 0755), t)
 				for file := 0; file < 3; file++ {
-					_, err := os.Create(filepath.FromSlash("test/log_" + testMiddlePart + "_" + strconv.Itoa(file)))
+					file, err := os.Create(filepath.FromSlash("test/log_" + testMiddlePart + "_" + strconv.Itoa(file)))
 					logErr(err, t)
+					logErr(file.Close(), t)
 				}
 			},
 			after: func(t *testing.T) {
