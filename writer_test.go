@@ -433,9 +433,7 @@ func TestRace(t *testing.T) {
 
 func BenchmarkWriteNew(b *testing.B) {
 	defer func() {
-		if err := os.RemoveAll("test"); err != nil {
-			b.Fatalf("unexpected error, %v", err)
-		}
+		logBenchmarkErr(os.RemoveAll("test"), b)
 	}()
 	conf := Conf{
 		Dir:      "test",
@@ -446,16 +444,13 @@ func BenchmarkWriteNew(b *testing.B) {
 		MaxBytes: 1024,
 	}
 	w, err := New(conf)
-	if err != nil {
-		b.Fatalf("unexpected error, %v", err)
-	}
+	logBenchmarkErr(err, b)
 	mes := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	for i := 0; i < b.N; i++ {
 		w.Close()
 		b.StartTimer()
-		if _, err := w.Write(mes); err != nil {
-			b.Fatalf("unexpected error, %v", err)
-		}
+		_, err := w.Write(mes)
+		logBenchmarkErr(err, b)
 		b.StopTimer()
 		removeOldestFile(conf)
 	}
@@ -477,5 +472,11 @@ func logErr(err error, t *testing.T) {
 func logErrAt(err error, index int, t *testing.T) {
 	if err != nil {
 		t.Fatalf("%d. unexpected error, %+v", index, err)
+	}
+}
+
+func logBenchmarkErr(err error, b *testing.B) {
+	if err != nil {
+		b.Fatalf("unexpected error, %+v", err)
 	}
 }
