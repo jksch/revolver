@@ -431,6 +431,36 @@ func TestRace(t *testing.T) {
 	wg.Wait()
 }
 
+func BenchmarkWriteNew(b *testing.B) {
+	defer func() {
+		if err := os.RemoveAll("test"); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+	}()
+	conf := Conf{
+		Dir:      "test",
+		Prefix:   "log_",
+		Middle:   testMiddlePartFunc,
+		Suffix:   ".txt",
+		MaxFiles: 2,
+		MaxBytes: 1024,
+	}
+	w, err := New(conf)
+	if err != nil {
+		b.Fatalf("unexpected error, %v", err)
+	}
+	mes := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	for i := 0; i < b.N; i++ {
+		w.Close()
+		b.StartTimer()
+		if _, err := w.Write(mes); err != nil {
+			b.Fatalf("unexpected error, %v", err)
+		}
+		b.StopTimer()
+		removeOldestFile(conf)
+	}
+}
+
 func errStr(err error) string {
 	if err == nil {
 		return ""
