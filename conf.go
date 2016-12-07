@@ -16,17 +16,23 @@ const (
 	defaultMaxBytes = 1024 * 1024 * 10
 )
 
-// Conf holds the conf for the revolving file writer
+// Conf holds the conf for the revolving file writer.
 type Conf struct {
-	Dir      string        // CAUTION all files in this dir with the Prefix will be deleted eventually
-	Prefix   string        // CAUTION this is used to identify old files to delete
-	Middle   func() string // A function that returns the middle part e. g. a date
+	Dir      string        // CAUTION all files in this dir with the Prefix will eventually be deleted
+	Prefix   string        // CAUTION this is used to identify surplus files to delete
+	Middle   func() string // A function that returns the middle of the file name part e. g. a date
 	Suffix   string        // optional
 	MaxFiles int           // min 1
 	MaxBytes int           // min 1
 }
 
-// DefaultConf returns a ready to use revolver conf
+// DefaultConf returns a ready to use revolver conf.
+// Dir: log
+// Prefix: log-
+// Middle: Now().format("02-01-2006-15:04:05") replaced : with _
+// Suffix: .txt
+// MaxFiles: 3
+// MaxBytes: 1024 * 1024 * 10
 func DefaultConf() Conf {
 	return Conf{
 		Dir:      defaultDir,
@@ -38,7 +44,8 @@ func DefaultConf() Conf {
 	}
 }
 
-// ValidConf checks if the given conf is valid
+// ValidConf checks if the given conf is valid.
+// Calling revolver.New() will also validate the conf.
 func ValidConf(conf Conf) error {
 	switch {
 	case reflect.DeepEqual(conf, Conf{}):
