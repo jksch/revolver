@@ -562,6 +562,8 @@ func BenchmarkFileCount(b *testing.B) {
 }
 
 // Testing only name creation without io
+// bytes.Buffer  10000000  154 ns/op
+// fmt.Sprintf   3000000   440 ns/o
 func BenchmarkNameCreationOnly(b *testing.B) {
 	var conf = Conf{
 		Dir:    "test",
@@ -570,7 +572,9 @@ func BenchmarkNameCreationOnly(b *testing.B) {
 	}
 	for i := 0; i < b.N; i++ {
 		name := filepath.FromSlash(conf.Dir + "/" + conf.Prefix + conf.Middle())
+		// do stuff
 		file := name
+		// do stuff
 		file = file + conf.Suffix
 	}
 }
