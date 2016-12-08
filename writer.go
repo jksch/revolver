@@ -76,9 +76,7 @@ func (l *revWriter) Write(p []byte) (n int, err error) {
 
 		}
 		l.file = file
-		l.size = size
-
-		return l.file.Write(p)
+		l.size = 0
 	}
 
 	l.size += size
