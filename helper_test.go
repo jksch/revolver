@@ -560,3 +560,17 @@ func BenchmarkFileCount(b *testing.B) {
 		logBenchmarkErr(err, b)
 	}
 }
+
+// Testing only name creation without io
+func BenchmarkNameCreationOnly(b *testing.B) {
+	var conf = Conf{
+		Dir:    "test",
+		Prefix: "log_",
+		Middle: func() string { return "file" },
+	}
+	for i := 0; i < b.N; i++ {
+		name := filepath.FromSlash(conf.Dir + "/" + conf.Prefix + conf.Middle())
+		file := name
+		file = file + conf.Suffix
+	}
+}
