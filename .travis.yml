@@ -2,13 +2,14 @@ language: go
 sudo: false
 go:
   - 1.7.4
-  install:
+  - tip
+install:
   - go get -v github.com/golang/lint/golint
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
   - go get -d -t -v ./...
   - go build -v ./...
-  script:
+script:
   - go vet ./...
   - $HOME/gopath/bin/golint .
   - go test -v -race ./...
