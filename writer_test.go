@@ -400,7 +400,7 @@ func TestMust(t *testing.T) {
 			}()
 			w := Must(New(test.conf))
 			if test.panic {
-				t.Errorf("%d. exp panic: true  got: false", index, test.panic)
+				t.Errorf("%d. exp panic: true  got: %v", index, test.panic)
 			}
 			if w != nil {
 				w.Close()

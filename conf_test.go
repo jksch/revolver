@@ -2,7 +2,6 @@ package revolver
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -23,8 +22,10 @@ func TestDefaultConfig(t *testing.T) {
 	if exp.Prefix != got.Prefix {
 		t.Errorf("exp config.Prefix: %v got: %v", exp.Prefix, got.Prefix)
 	}
-	if reflect.DeepEqual(exp.Middle, got.Middle) {
-		t.Errorf("exp config.Middle: %v got: %v", exp.Middle, got.Middle)
+	expMiddle := exp.Middle()
+	gotMiddle := got.Middle()
+	if expMiddle != gotMiddle {
+		t.Errorf("exp config.Middle: %v got: %v", expMiddle, gotMiddle)
 	}
 	if exp.Suffix != got.Suffix {
 		t.Errorf("exp config.Suffix: %v got: %v", exp.Suffix, got.Suffix)
