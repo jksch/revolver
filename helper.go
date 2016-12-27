@@ -36,9 +36,8 @@ func createFile(conf Conf) (*os.File, error) {
 		if _, err := os.Stat(file); err != nil {
 			if os.IsNotExist(err) {
 				return os.Create(file)
-			} else {
-				return nil, err
 			}
+			return nil, err
 		}
 		file = name + "_" + strconv.Itoa(try)
 		try++
