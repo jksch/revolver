@@ -1,6 +1,7 @@
 # Revolver
 [![Build Status](https://travis-ci.org/jksch/revolver.svg?branch=master)](https://travis-ci.org/jksch/revolver)
 [![Coverage Status](https://coveralls.io/repos/github/jksch/revolver/badge.svg)](https://coveralls.io/github/jksch/revolver)
+
 Is a simple revolving file writer for go.
 
 Revolver allows for a simple log file rotation setup:
