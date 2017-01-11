@@ -19,10 +19,13 @@ func TestSetupDirs(t *testing.T) {
 		err    string
 	}{
 		{
-			dirs: "",
-			err:  "mkdir : no such file or directory",
+			before: func(t *testing.T) {},
+			after:  func(t *testing.T) {},
+			dirs:   "",
+			err:    "mkdir : no such file or directory",
 		},
 		{
+			before: func(t *testing.T) {},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
 			},
@@ -30,6 +33,7 @@ func TestSetupDirs(t *testing.T) {
 			err:  "",
 		},
 		{
+			before: func(t *testing.T) {},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
 			},
@@ -37,6 +41,7 @@ func TestSetupDirs(t *testing.T) {
 			err:  "",
 		},
 		{
+			before: func(t *testing.T) {},
 			after: func(t *testing.T) {
 				logErr(os.Remove("test"), t)
 			},
@@ -44,6 +49,7 @@ func TestSetupDirs(t *testing.T) {
 			err:  "",
 		},
 		{
+			before: func(t *testing.T) {},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
 			},
@@ -67,12 +73,9 @@ func TestSetupDirs(t *testing.T) {
 	for index, test := range tests {
 		index, test := index, test
 		t.Run(fmt.Sprintf("%d. exp dir: %s err: %v", index, test.dirs, test.err), func(t *testing.T) {
-			if test.before != nil {
-				test.before(t)
-			}
-			if test.after != nil {
-				defer test.after(t)
-			}
+			test.before(t)
+			defer test.after(t)
+
 			if err := errStr(setupDirs(test.dirs)); err != test.err {
 				t.Fatalf("%d. exp err: '%s' got: '%v'", index, test.err, err)
 			}
@@ -173,12 +176,9 @@ func TestCreateFile(t *testing.T) {
 	for index, test := range tests {
 		index, test := index, test
 		t.Run(fmt.Sprintf("%d. create file", index), func(t *testing.T) {
-			if test.before != nil {
-				test.before(t)
-			}
-			if test.after != nil {
-				defer test.after(t)
-			}
+			test.before(t)
+			defer test.after(t)
+
 			file, err := createFile(test.conf)
 			if test.err != "" && test.err != errStr(err) {
 				t.Errorf("%d. exp err: '%s' got: '%v'", index, test.err, err)
@@ -276,12 +276,9 @@ func TestFileCount(t *testing.T) {
 	for index, test := range tests {
 		index, test := index, test
 		t.Run(fmt.Sprintf("%d. count exp %d err %v", index, test.count, test.err), func(t *testing.T) {
-			if test.before != nil {
-				test.before(t)
-			}
-			if test.after != nil {
-				defer test.after(t)
-			}
+			test.before(t)
+			defer test.after(t)
+
 			count, err := fileCount(test.conf)
 			if test.err != "" && !strings.HasPrefix(errStr(err), test.err) {
 				t.Errorf("%d. exp err starts: '%s' got: '%v'", index, test.err, err)
@@ -390,12 +387,9 @@ func TestRemoveOlderst(t *testing.T) {
 	for index, test := range tests {
 		index, test := index, test
 		t.Run(fmt.Sprintf("%d. remove oldest", index), func(t *testing.T) {
-			if test.before != nil {
-				test.before(t)
-			}
-			if test.after != nil {
-				defer test.after(t)
-			}
+			test.before(t)
+			defer test.after(t)
+
 			if err := errStr(removeOldestFile(test.conf)); err != test.err {
 				t.Errorf("%d. exp err: '%s' got: '%s'", index, test.err, err)
 			}
@@ -484,12 +478,9 @@ func TestCountAndRemove(t *testing.T) {
 	for index, test := range tests {
 		index, test := index, test
 		t.Run(fmt.Sprintf("%d. count and remove", index), func(t *testing.T) {
-			if test.before != nil {
-				test.before(t)
-			}
-			if test.after != nil {
-				defer test.after(t)
-			}
+			test.before(t)
+			defer test.after(t)
+
 			if err := errStr(countAndRemoveFiles(test.conf)); err != test.err {
 				t.Errorf("%d. exp err: '%s' got: '%s'", index, test.err, err)
 			}
