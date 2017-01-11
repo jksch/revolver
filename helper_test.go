@@ -398,14 +398,10 @@ func TestRemoveOlderst(t *testing.T) {
 			}
 			files, err := ioutil.ReadDir(test.conf.Dir)
 			logErrAt(err, index, t)
-		check:
 			for position, name := range test.files {
-				for _, info := range files {
-					if info.Name() == name {
-						continue check
-					}
+				if !containsFileName(name, files) {
+					t.Errorf("%d. exp file: %s at %d to remain in folder", index, name, position)
 				}
-				t.Errorf("%d. exp file: %s at %d to remain in folder", index, name, position)
 			}
 			count := len(files)
 			if count != test.count {
@@ -567,4 +563,13 @@ func BenchmarkNameCreationOnly(b *testing.B) {
 		doStuff(name)
 		_ = name + conf.Suffix
 	}
+}
+
+func containsFileName(name string, files []os.FileInfo) bool {
+	for _, info := range files {
+		if info.Name() == name {
+			return true
+		}
+	}
+	return false
 }
