@@ -570,11 +570,10 @@ func BenchmarkNameCreationOnly(b *testing.B) {
 		Prefix: "log_",
 		Middle: func() string { return "file" },
 	}
+	doStuff := func(name string) { /* do nothing */ }
 	for i := 0; i < b.N; i++ {
 		name := filepath.FromSlash(conf.Dir + "/" + conf.Prefix + conf.Middle())
-		// do stuff
-		file := name
-		// do stuff
-		file = file + conf.Suffix
+		doStuff(name)
+		_ = name + conf.Suffix
 	}
 }
