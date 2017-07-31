@@ -16,6 +16,7 @@ const (
 	defaultMaxBytes = 1024 * 1024 * 10
 )
 
+// Conf is deprecated. Use NewQuick instead.
 // Conf holds the conf for the revolving file writer.
 type Conf struct {
 	Dir      string        // CAUTION all files in this dir with the Prefix will eventually be deleted
@@ -44,6 +45,7 @@ func DefaultConf() Conf {
 	}
 }
 
+// ValidConf is deprecated. Use NewQuick instead.
 // ValidConf checks if the given conf is valid.
 // Calling revolver.New() will also validate the conf.
 func ValidConf(conf Conf) error {

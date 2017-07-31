@@ -65,7 +65,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 1,
 				MaxBytes: 1024,
 			},
-			err: "revolver remove, open test: permission denied",
+			err: "revolver, remove, open test: permission denied",
 		},
 		{
 			before: func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 2,
 				MaxBytes: 1024,
 			},
-			err: "revolver create, open " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
+			err: "revolver, create, open " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
 		},
 		{
 			after: func(t *testing.T) {
@@ -172,7 +172,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 5,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver bytes to write 6 over max file size 5",
+			err:   "revolver, bytes to write 6 over max file size 5",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -191,7 +191,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver remove, open test: permission denied",
+			err:   "revolver, remove, open test: permission denied",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -213,7 +213,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver remove, remove " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
+			err:   "revolver, remove, remove " + filepath.FromSlash("test/log_"+testMiddlePart) + ": permission denied",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -234,7 +234,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver close, invalid argument",
+			err:   "revolver, close, invalid argument",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -253,7 +253,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver create, open " + filepath.FromSlash("test/log_"+testMiddlePart+"_0") + ": permission denied",
+			err:   "revolver, create, open " + filepath.FromSlash("test/log_"+testMiddlePart+"_0") + ": permission denied",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -328,7 +328,7 @@ func TestWrite(t *testing.T) {
 				return // test done
 			}
 
-			count, err := fileCount(test.conf)
+			count, err := fileCount(test.conf.Dir, test.conf.Prefix)
 			logErrAt(err, index, t)
 			if count > test.conf.MaxFiles {
 				t.Errorf("%d. exp file count: %d got: %d", index, test.conf.MaxFiles, count)
@@ -439,6 +439,64 @@ func TestRace(t *testing.T) {
 	wg.Wait()
 }
 
+func TestNewQuick(t *testing.T) {
+	var tests = []struct {
+		dir      string
+		prefix   string
+		suffix   string
+		middle   func() string
+		maxBytes int
+		maxFiles int
+		err      string
+	}{
+		{
+			prefix: "",
+			err:    "revolver, prefix can not be empty",
+		},
+		{
+			prefix:   "test_",
+			maxBytes: 0,
+			err:      "revolver, maxBytes must be > 0",
+		},
+		{
+			prefix:   "test_",
+			maxBytes: 1,
+			maxFiles: 0,
+			err:      "revolver, maxFiles must be > 0",
+		},
+	}
+	for index, test := range tests {
+		index, test := index, test
+		t.Run(fmt.Sprintf("%d. test new quick", index), func(t *testing.T) {
+			t.Parallel()
+			w, err := NewQuick(test.dir, test.prefix, test.suffix, test.middle, test.maxBytes, test.maxFiles)
+			if test.err != errStr(err) {
+				fmt.Errorf("%d. exp err: %s got: %s", index, test.err, err)
+			}
+			if err == nil {
+				w.Close()
+			}
+		})
+	}
+}
+
+func TestDefaultMiddle(t *testing.T) {
+	defer func() {
+		logErr(os.RemoveAll("test"), t)
+	}()
+	w, err := NewQuick("test", "pre_", "", nil, 1024, 1)
+	logErr(err, t)
+	defer func() {
+		logErr(w.Close(), t)
+	}()
+	rev := w.(*revWriter)
+
+	got := rev.middle()
+	if got != "" {
+		t.Errorf("exp middle to be empty got: %s", got)
+	}
+}
+
 func BenchmarkWriteNew(b *testing.B) {
 	defer func() {
 		logBenchmarkErr(os.RemoveAll("test"), b)
@@ -460,7 +518,7 @@ func BenchmarkWriteNew(b *testing.B) {
 		_, err := w.Write(mes)
 		logBenchmarkErr(err, b)
 		b.StopTimer()
-		removeOldestFile(conf)
+		removeOldestFile(conf.Dir, conf.Prefix)
 	}
 }
 

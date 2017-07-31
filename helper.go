@@ -27,12 +27,12 @@ func setupDirs(dirs string) error {
 	return os.MkdirAll(dirs, 0755)
 }
 
-func createFile(conf Conf) (*os.File, error) {
-	name := filepath.FromSlash(conf.Dir + "/" + conf.Prefix + conf.Middle())
+func createFile(dir, prefix, suffix string, filename func() string) (*os.File, error) {
+	name := filepath.FromSlash(filepath.Join(dir, prefix+filename()))
 	try := 0
 	file := name
 	for {
-		file = file + conf.Suffix
+		file = file + suffix
 		if _, err := os.Stat(file); err != nil {
 			if os.IsNotExist(err) {
 				return os.Create(file)
@@ -44,48 +44,56 @@ func createFile(conf Conf) (*os.File, error) {
 	}
 }
 
-func fileCount(conf Conf) (int, error) {
-	files, err := ioutil.ReadDir(filepath.FromSlash(conf.Dir))
+func fileCount(dir, prefix string) (int, error) {
+	files, err := ioutil.ReadDir(filepath.FromSlash(dir))
 	if err != nil {
 		return 0, err
 	}
 
 	count := 0
 	for _, info := range files {
-		if strings.HasPrefix(info.Name(), conf.Prefix) {
+		if isRevolverFile(prefix, info) {
 			count++
 		}
 	}
 	return count, nil
 }
 
-func removeOldestFile(conf Conf) error {
-	dir := filepath.FromSlash(conf.Dir + "/")
+func removeOldestFile(dir, prefix string) error {
+	dir = filepath.FromSlash(dir)
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
 	}
 	var oldest os.FileInfo
 	for _, info := range files {
-		if oldest == nil || oldest.ModTime().After(info.ModTime()) {
+		if isRevolverFile(prefix, info) && isOlder(info, oldest) {
 			oldest = info
 		}
 	}
 	if oldest != nil {
-		if err := os.Remove(dir + oldest.Name()); err != nil {
+		if err := os.Remove(filepath.Join(dir, oldest.Name())); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func countAndRemoveFiles(conf Conf) error {
-	count, err := fileCount(conf)
+func isRevolverFile(prefix string, file os.FileInfo) bool {
+	return !file.IsDir() && strings.HasPrefix(file.Name(), prefix)
+}
+
+func isOlder(test, old os.FileInfo) bool {
+	return old == nil || old.ModTime().After(test.ModTime())
+}
+
+func countAndRemoveFiles(dir, prefix string, maxFiles int) error {
+	count, err := fileCount(dir, prefix)
 	if err != nil {
 		return err
 	}
-	for conf.MaxFiles <= count {
-		if err := removeOldestFile(conf); err != nil {
+	for maxFiles <= count {
+		if err := removeOldestFile(dir, prefix); err != nil {
 			return err
 		}
 		count--
