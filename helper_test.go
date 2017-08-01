@@ -470,7 +470,6 @@ func BenchmarkSetupDirs(b *testing.B) {
 		logBenchmarkErr(os.RemoveAll("test"), b)
 	}()
 	for i := 0; i < b.N; i++ {
-		b.StartTimer()
 		logBenchmarkErr(setupDirs("test/log"), b)
 		b.StopTimer()
 		logBenchmarkErr(os.RemoveAll("test"), b)
@@ -489,7 +488,6 @@ func BenchmarkCreateFile(b *testing.B) {
 	}
 	logBenchmarkErr(os.Mkdir("test", 0755), b)
 	for i := 0; i < b.N; i++ {
-		b.StartTimer()
 		file, err := createFile(dir, prefix, suffix, middle)
 		b.StopTimer()
 		logBenchmarkErr(err, b)

@@ -514,11 +514,11 @@ func BenchmarkWriteNew(b *testing.B) {
 	logBenchmarkErr(err, b)
 	mes := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	for i := 0; i < b.N; i++ {
+		b.StopTimer()
 		w.Close()
-		b.StartTimer()
 		_, err := w.Write(mes)
 		logBenchmarkErr(err, b)
-		b.StopTimer()
+		b.StartTimer()
 		removeOldestFile(conf.Dir, conf.Prefix)
 	}
 }
