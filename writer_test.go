@@ -49,7 +49,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 2,
 				MaxBytes: 1024,
 			},
-			err: "revolver setup, test is not a directory",
+			err: "revolver setup,",
 		},
 		{
 			before: func(t *testing.T) {
@@ -66,7 +66,7 @@ func TestNew(t *testing.T) {
 				MaxFiles: 1,
 				MaxBytes: 1024,
 			},
-			err: "revolver, remove, error while counting files, open test",
+			err: "revolver, remove, error while counting files, ",
 		},
 		{
 			before: func(t *testing.T) {
@@ -134,7 +134,7 @@ func TestNew(t *testing.T) {
 				logErr(file.Close(), t)
 			}
 			if !strings.HasPrefix(errStr(err), test.err) {
-				t.Errorf("%d. exp err: '%s' contains: '%s'", index, err, test.err)
+				t.Errorf("%d. exp prefix: '%s' got: '%s'", index, test.err, err)
 			}
 
 			if test.err != "" {
@@ -235,7 +235,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver, close, invalid argument",
+			err:   "revolver, close,",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -254,7 +254,7 @@ func TestWrite(t *testing.T) {
 				MaxBytes: 10,
 			},
 			bytes: []byte{1, 2, 3, 4, 5, 6},
-			err:   "revolver, create, open " + filepath.FromSlash("test/log_"+testMiddlePart+"_0") + ": permission denied",
+			err:   "revolver, create, ",
 		},
 		{
 			before: func(w *revWriter, t *testing.T) {
@@ -323,7 +323,7 @@ func TestWrite(t *testing.T) {
 
 			n, err := log.Write(test.bytes)
 			if !strings.HasPrefix(errStr(err), test.err) {
-				t.Errorf("%d. exp err: '%s' contains: '%s'", index, err, test.err)
+				t.Errorf("%d. exp prefix: '%s' got: '%s'", index, test.err, err)
 			}
 			if test.err != "" {
 				return // test done

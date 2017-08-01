@@ -20,12 +20,6 @@ func TestSetupDirs(t *testing.T) {
 	}{
 		{
 			before: func(t *testing.T) {},
-			after:  func(t *testing.T) {},
-			dirs:   "",
-			err:    "mkdir : no such file or directory",
-		},
-		{
-			before: func(t *testing.T) {},
 			after: func(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
 			},
@@ -78,7 +72,7 @@ func TestSetupDirs(t *testing.T) {
 
 			errStr := errStr(setupDirs(test.dirs))
 			if !strings.HasPrefix(errStr, test.err) {
-				t.Errorf("%d. exp err: '%s', contains: '%s'", index, errStr, test.err)
+				t.Errorf("%d. exp prefix: '%s' got: '%s'", index, test.err, errStr)
 			}
 			if test.err != "" || test.dirs == "" {
 				return // done testing
@@ -177,7 +171,7 @@ func TestNewCreateFile(t *testing.T) {
 
 			file, err := createFile(test.dir, test.prefix, test.suffix, test.middle)
 			if !strings.HasPrefix(errStr(err), test.err) {
-				t.Errorf("%d. exp err: '%s', contains: '%s", index, err, test.err)
+				t.Errorf("%d. exp prefix: '%s' got: '%s'", index, test.err, err)
 			}
 			if test.err != "" {
 				return // test done
@@ -270,7 +264,7 @@ func TestNewFileCount(t *testing.T) {
 
 			count, err := fileCount(test.dir, test.prefix)
 			if !strings.HasPrefix(errStr(err), test.err) {
-				t.Errorf("%d. exp err: '%s' contains: '%s'", index, err, test.err)
+				t.Errorf("%d. exp prefix: '%s' got: '%s'", index, test.err, err)
 			}
 			if count != test.count {
 				t.Errorf("%d. exp count: %d got %d", index, test.count, count)
@@ -372,7 +366,7 @@ func TestNewRemoveOlderst(t *testing.T) {
 
 			errStr := errStr(removeOldestFile(test.dir, test.prefix))
 			if !strings.HasPrefix(errStr, test.err) {
-				t.Errorf("%d. exp err: '%s' contains: '%s'", index, errStr, test.err)
+				t.Errorf("%d. exp prefix: '%s' got: '%s'", index, test.err, errStr)
 			}
 			if test.err != "" {
 				return //Test done

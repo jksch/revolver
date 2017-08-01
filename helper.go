@@ -17,7 +17,7 @@ func setupDirs(dirs string) error {
 	info, err := os.Stat(dirs)
 	if err == nil {
 		if !info.IsDir() {
-			return fmt.Errorf("%s is not a directory", dirs)
+			return fmt.Errorf("error in dir setup %s is not a directory", dirs)
 		}
 		return nil
 	}
