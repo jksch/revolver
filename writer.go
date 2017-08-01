@@ -40,7 +40,7 @@ func New(conf Conf) (io.WriteCloser, error) {
 	return NewQuick(conf.Dir, conf.Prefix, conf.Suffix, conf.Middle, conf.MaxBytes, conf.MaxFiles)
 }
 
-// NewQuick returns a io.WriteCloser that writes revolving files.
+// NewQuick is like New with the difference that no Conf struct is needed.
 // Calling New will always create a new file even if there is space left in other files.
 // If the configured directory doesn't exist it will be created.
 func NewQuick(dir, prefix, suffix string, middle func() string, maxBytes, maxFiles int) (io.WriteCloser, error) {
@@ -81,7 +81,7 @@ func NewQuick(dir, prefix, suffix string, middle func() string, maxBytes, maxFil
 	}, nil
 }
 
-// Write the given bytes into the log file specified by the given conf.
+// Write writes the given bytes into the current file. The specifics of the file are specified on writer creation.
 // If there is not enough file space left,surplus files will be deleted and a new file will be created.
 func (l *revWriter) Write(p []byte) (n int, err error) {
 	l.lock.Lock()
