@@ -22,7 +22,7 @@ func setupDirs(dirs string) error {
 		return nil
 	}
 	if !os.IsNotExist(err) {
-		return err
+		return fmt.Errorf("error in dir setup, %v", err)
 	}
 	return os.MkdirAll(dirs, 0755)
 }
@@ -37,7 +37,7 @@ func createFile(dir, prefix, suffix string, filename func() string) (*os.File, e
 			if os.IsNotExist(err) {
 				return os.Create(file)
 			}
-			return nil, err
+			return nil, fmt.Errorf("error on create file, %v", err)
 		}
 		file = name + "_" + strconv.Itoa(try)
 		try++
@@ -47,7 +47,7 @@ func createFile(dir, prefix, suffix string, filename func() string) (*os.File, e
 func fileCount(dir, prefix string) (int, error) {
 	files, err := ioutil.ReadDir(filepath.FromSlash(dir))
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("error while counting files, %v", err)
 	}
 
 	count := 0
@@ -63,7 +63,7 @@ func removeOldestFile(dir, prefix string) error {
 	dir = filepath.FromSlash(dir)
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		return err
+		return fmt.Errorf("error listing oldest file, %v", err)
 	}
 	var oldest os.FileInfo
 	for _, info := range files {
@@ -73,7 +73,7 @@ func removeOldestFile(dir, prefix string) error {
 	}
 	if oldest != nil {
 		if err := os.Remove(filepath.Join(dir, oldest.Name())); err != nil {
-			return err
+			return fmt.Errorf("error removing oldest file, %v", err)
 		}
 	}
 	return nil

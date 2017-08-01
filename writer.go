@@ -45,7 +45,7 @@ func New(conf Conf) (io.WriteCloser, error) {
 // If the configured directory doesn't exist it will be created.
 func NewQuick(dir, prefix, suffix string, middle func() string, maxBytes, maxFiles int) (io.WriteCloser, error) {
 	if prefix == "" {
-		fmt.Errorf("revolver, prefix can not be empty")
+		return nil, fmt.Errorf("revolver, prefix can not be empty")
 	}
 	if middle == nil {
 		middle = func() string { return "" }
@@ -130,4 +130,5 @@ func (l *revWriter) close() error {
 	err := l.file.Close()
 	l.file = nil
 	return err
+
 }

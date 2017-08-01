@@ -66,7 +66,7 @@ func TestSetupDirs(t *testing.T) {
 				logErr(os.RemoveAll("test"), t)
 			},
 			dirs: "test/log",
-			err:  "stat " + filepath.FromSlash("test/log") + ": not a directory",
+			err:  "error in dir setup,",
 		},
 	}
 
@@ -76,8 +76,9 @@ func TestSetupDirs(t *testing.T) {
 			test.before(t)
 			defer test.after(t)
 
-			if err := errStr(setupDirs(test.dirs)); err != test.err {
-				t.Fatalf("%d. exp err: '%s' got: '%v'", index, test.err, err)
+			errStr := errStr(setupDirs(test.dirs))
+			if !strings.HasPrefix(errStr, test.err) {
+				t.Errorf("%d. exp err: '%s', contains: '%s'", index, errStr, test.err)
 			}
 			if test.err != "" || test.dirs == "" {
 				return // done testing
@@ -165,7 +166,7 @@ func TestNewCreateFile(t *testing.T) {
 			prefix: "dd_",
 			suffix: ".json",
 			middle: testMiddlePartFunc,
-			err:    "stat " + filepath.FromSlash("test/dd_"+testMiddlePart+".json") + ": not a directory",
+			err:    "error on create file,",
 		},
 	}
 	for index, test := range tests {
@@ -175,8 +176,8 @@ func TestNewCreateFile(t *testing.T) {
 			defer test.after(t)
 
 			file, err := createFile(test.dir, test.prefix, test.suffix, test.middle)
-			if test.err != "" && test.err != errStr(err) {
-				t.Errorf("%d. exp err: '%s' got: '%v'", index, test.err, err)
+			if !strings.HasPrefix(errStr(err), test.err) {
+				t.Errorf("%d. exp err: '%s', contains: '%s", index, err, test.err)
 			}
 			if test.err != "" {
 				return // test done
@@ -257,7 +258,7 @@ func TestNewFileCount(t *testing.T) {
 			},
 			dir:    "test",
 			prefix: "log_",
-			err:    "readdirent:",
+			err:    "error while counting files,",
 		},
 	}
 
@@ -268,8 +269,8 @@ func TestNewFileCount(t *testing.T) {
 			defer test.after(t)
 
 			count, err := fileCount(test.dir, test.prefix)
-			if test.err != "" && !strings.HasPrefix(errStr(err), test.err) {
-				t.Errorf("%d. exp err starts: '%s' got: '%v'", index, test.err, err)
+			if !strings.HasPrefix(errStr(err), test.err) {
+				t.Errorf("%d. exp err: '%s' contains: '%s'", index, err, test.err)
 			}
 			if count != test.count {
 				t.Errorf("%d. exp count: %d got %d", index, test.count, count)
@@ -343,7 +344,7 @@ func TestNewRemoveOlderst(t *testing.T) {
 			},
 			dir:    "test",
 			prefix: "_",
-			err:    "readdirent: not a directory",
+			err:    "error listing oldest file,",
 		},
 		{
 			before: func(t *testing.T) {
@@ -359,7 +360,7 @@ func TestNewRemoveOlderst(t *testing.T) {
 			},
 			dir:    "test",
 			prefix: "_",
-			err:    "remove " + filepath.FromSlash("test/_log") + ": permission denied",
+			err:    "error removing oldest file,",
 		},
 	}
 
@@ -369,8 +370,9 @@ func TestNewRemoveOlderst(t *testing.T) {
 			test.before(t)
 			defer test.after(t)
 
-			if err := errStr(removeOldestFile(test.dir, test.prefix)); err != test.err {
-				t.Errorf("%d. exp err: '%s' got: '%s'", index, test.err, err)
+			errStr := errStr(removeOldestFile(test.dir, test.prefix))
+			if !strings.HasPrefix(errStr, test.err) {
+				t.Errorf("%d. exp err: '%s' contains: '%s'", index, errStr, test.err)
 			}
 			if test.err != "" {
 				return //Test done
