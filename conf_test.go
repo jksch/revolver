@@ -10,7 +10,7 @@ func TestDefaultConfig(t *testing.T) {
 	exp := Conf{
 		Dir:      defaultDir,
 		Prefix:   defaultPrefix,
-		Middle:   logDate,
+		Middle:   DateStringMiddle,
 		Suffix:   defaultSuffix,
 		MaxFiles: defaultMaxFiles,
 		MaxBytes: defaultMaxBytes,
@@ -62,7 +62,7 @@ func TestValidConf(t *testing.T) {
 			conf: Conf{
 				Dir:    "log/",
 				Prefix: "log-",
-				Middle: logDate,
+				Middle: DateStringMiddle,
 			},
 			err: "revolver conf.MaxFiles must be > 0",
 		},
@@ -70,7 +70,7 @@ func TestValidConf(t *testing.T) {
 			conf: Conf{
 				Dir:      "log/",
 				Prefix:   "log-",
-				Middle:   logDate,
+				Middle:   DateStringMiddle,
 				MaxFiles: 1,
 			},
 			err: "revolver conf.MaxBytes must be > 0",
@@ -79,7 +79,7 @@ func TestValidConf(t *testing.T) {
 			conf: Conf{
 				Dir:      "log/",
 				Prefix:   "log-",
-				Middle:   logDate,
+				Middle:   DateStringMiddle,
 				MaxFiles: 1,
 				MaxBytes: 1,
 			},
@@ -125,7 +125,7 @@ func TestClean(t *testing.T) {
 
 func TestLogDate(t *testing.T) {
 	formatOnly := time.Now().Format("02-01-2006-15:04:05")
-	replaced := logDate()
+	replaced := DateStringMiddle()
 	if formatOnly == replaced {
 		t.Errorf("exp logDate: '%s' !=  '%s'", replaced, formatOnly)
 	}

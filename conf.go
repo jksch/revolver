@@ -16,6 +16,12 @@ const (
 	defaultMaxBytes = 1024 * 1024 * 10
 )
 
+// DateStringMiddle returns a date string which dose not contain any reserved
+// characters (e. g. i':' on Windows). Therefor it is save to used in filenames.
+func DateStringMiddle() string {
+	return strings.Replace(time.Now().Format("02-01-2006-15:04:05"), ":", "_", -1)
+}
+
 // Conf is deprecated. Use NewQuick instead.
 // Conf holds the conf for the revolving file writer.
 type Conf struct {
@@ -38,7 +44,7 @@ func DefaultConf() Conf {
 	return Conf{
 		Dir:      defaultDir,
 		Prefix:   defaultPrefix,
-		Middle:   logDate,
+		Middle:   DateStringMiddle,
 		Suffix:   defaultSuffix,
 		MaxFiles: defaultMaxFiles,
 		MaxBytes: defaultMaxBytes,
@@ -67,8 +73,4 @@ func ValidConf(conf Conf) error {
 func clean(conf Conf) Conf {
 	conf.Dir = filepath.Clean(conf.Dir)
 	return conf
-}
-
-func logDate() string {
-	return strings.Replace(time.Now().Format("02-01-2006-15:04:05"), ":", "_", -1)
 }
