@@ -20,63 +20,40 @@ Revolver allows for a simple log file rotation setup:
 ### Basic usage
 ```go
 func main() {
-	w, err := revolver.New(revolver.DefaultConf())
+	w, err := revolver.NewQuick(
+		"logs",
+		"log_",
+		".txt",
+		func() string { return "" },
+		1024*1024,
+		3,
+	)
 	if err != nil {
-		log.Println(err)
+		panic(err)
 	}
-	log.SetOutput(w)
-	log.Println("Ready to use!")
+	Log := log.New(w, "", log.Ldate|log.Ltime|log.Lshortfile)
+	Log.Printf("Ready to use...")
 }
 ```
 Alternatively must can be used to get a writer or panic:
 ```go
 var (
-	rev    = revolver.Must(revolver.New(revolver.DefaultConf()))
-	logger = log.New(rev, "", log.Ldate|log.Ltime|log.Lshortfile)
+	count  = 0
+	writer = revolver.Must(revolver.NewQuick(
+		"exports",
+		"export_",
+		".json",
+		func() string {
+			count++
+			return strconv.Itoa(count)
+		},
+		1024*1024,
+		10,
+	))
 )
 
 func main() {
-	logger.Println("Ready to use!")
-}
-```
-It is also possible to set up multiple writers for different purposes. Perhaps to separate the app log form the serial log which tends to be spamy:
-```go
-var (
-	appConf = revolver.Conf{
-		Dir:    "log/app",
-		Prefix: "app-",
-		Middle: func() string {
-			return strings.Replace(time.Now().Format("02-01-2006-15:04"), ":", "_", -1)
-		},
-		Suffix:   ".txt",
-		MaxFiles: 5,
-		MaxBytes: 1024 * 1024 * 10,
-	}
-	serialConf = revolver.Conf{
-		Dir:    "log/serial",
-		Prefix: "serial-",
-		Middle: func() string {
-			return strings.Replace(time.Now().Format("02-01-2006-15:04:00"), ":", "_", -1)
-		},
-		Suffix:   ".txt",
-		MaxFiles: 3,
-		MaxBytes: 1024 * 1024 * 5,
-	}
-	applog    = log.New(io.MultiWriter(os.Stdout, revolver.Must(revolver.New(appConf))), "", 0)
-	seriallog = log.New(revolver.Must(revolver.New(serialConf)), "", 0)
-)
-
-func main() {
-	setupApp(applog)
-	setupSerial(seriallog)
-}
-
-func setupApp(logger *log.Logger) {
-	logger.Printf("Setting up app...")
-}
-
-func setupSerial(logger *log.Logger) {
-	logger.Printf("Setting up serial com...")
+	writer.Write([]byte("Some export data..."))
 }
 ```
 ### Compatibility
