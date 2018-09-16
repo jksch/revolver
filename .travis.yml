@@ -17,8 +17,5 @@ script:
 - go vet ./...
 - $HOME/gopath/bin/golint .
 - go test -v -race ./...
-- go test -v -covermode=count -coverprofile=cov.out
-- $HOME/gopath/bin/goveralls -coverprofile=cov.out -service=travis-ci -repotoken $COVERALLS_TOKEN
-env:
-  global:
-    secure: gcb0bTTNzj6OubyC+9uGqTQ3ANOats1zUA5DIy68LcWuraQI079+A1h1VnEtYBmem5Cf+XVpqsrsvbk1Vg0U2a53qXY/7+DCRINf7BRojKd3oDGXIQnbWx4fLhYmYy8ODQBKlXkImpRB389iXSrEIozIgRi4tnO24TrT893L8ZkPBjOekYViDZX/PFBp7hHgmovhnrUZngjgvV8Hgpxx0DQWeLW8qsZZk4rfWNldDvvB8D4shQufSc9bfTQHfbGbyNiFzvtMolgXaRAA8fGjeEGkoFvfn2bhReMPjqJXWl6e67B+GZ/e0+Gm2ilws4y3p80mf4BCJ5pdeYqMNbxs68rDvmG0tE1hRu/VPo2omVHjvjvYHKaLpDMmUOSP5rJChTcN+aAvSYg39FPMH3BZDdYVrsoX5NGrRGavwbR/t5rv5wYaFgZiWnOget6qWU91AIySUzXPoi+7tKDbOnrg0ei5hmrTsSwwndb8sbiI4cynn6sV53uuPsBj++VxKlC3H91uh9GVeonKlSR2VSh1bVSgDFT4AqjL1Xi/h1h9kFiYGwHQ3MOg546o85IS1xQubFPRaIdI45SgRO0BBR4BNgpKrgwDaTts5Qgwb6GynSgXS0+3RV2NfU2+jGSKalQzzRCNJOwQH6AEhY2Kwo/ix5Jh1sWVXdfAo8mbCNJDDWk=
+- go test -v -covermode=count -coverprofile=profile.cov
+- $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
