@@ -519,7 +519,7 @@ func BenchmarkWriteNew(b *testing.B) {
 		_, err := w.Write(mes)
 		logBenchmarkErr(err, b)
 		b.StartTimer()
-		removeOldestFile(conf.Dir, conf.Prefix)
+		logBenchmarkErr(removeOldestFile(conf.Dir, conf.Prefix), b)
 	}
 }
 
