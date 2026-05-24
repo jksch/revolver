@@ -1,3 +1,11 @@
+# 📦 Repository Retired
+
+This repository is no longer maintained here.
+
+Repository moved to [codeberg.org/jksch/revolver](https://codeberg.org/jksch/revolver).
+
+---
+
 # Revolver
 [![Go Report Card](https://goreportcard.com/badge/github.com/jksch/revolver)](https://goreportcard.com/report/github.com/jksch/revolver)
 [![GoDoc](https://godoc.org/github.com/jksch/revolver?status.svg)](https://godoc.org/github.com/jksch/revolver)
